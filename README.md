@@ -1,1 +1,1 @@
-# benchmarking-path-models
+# Benchmarking foundation models for pathology
