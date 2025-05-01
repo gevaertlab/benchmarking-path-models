@@ -5,7 +5,23 @@ import altair as alt
 from st_aggrid import AgGrid
 
 # Load the DataFrame
-df = pd.read_csv("~/Downloads/benchmarking/benchmarking_revised_wfusion.csv")
+#df = pd.read_csv("~/Downloads/benchmarking/benchmarking_revised_wfusion.csv")
+df = pd.read_csv("../data/benchmarking_revised_wfusion.csv")
+
+df = df.drop(columns=['ModelName'])
+df = df.rename(columns={
+    'ModelName_short': 'Model Name',
+    'Task_short': 'Task',
+    'ModelCategory' : 'Model Category',
+    'ModelArch' : 'Model Architecture',
+    'ModelDomain' : 'Model Domain',
+})
+df.columns = df.columns.str.replace('_', ' ')
+# Replace underscores with spaces in 'Category' column
+df['Task'] = df['Task'].str.replace('_', ' ', regex=False)
+
+
+
 
 # Assuming df is your pandas DataFrame
 # Define the mapping dictionary for ModelCategory
@@ -23,8 +39,8 @@ category_mapping2 = {
 }
 
 # Update ModelCategory column: replace specified values, keep others unchanged
-df['Model Category Abbreviation'] = df['ModelCategory'].map(category_mapping).fillna(df['ModelCategory'])
-df['ModelCategory'] = df['ModelCategory'].map(category_mapping2).fillna(df['ModelCategory'])
+df['Model Category Abbreviation'] = df['Model Category'].map(category_mapping).fillna(df['Model Category'])
+df['Model Category'] = df['Model Category'].map(category_mapping2).fillna(df['Model Category'])
 
 df = df.replace({None: np.nan})
 
@@ -198,7 +214,7 @@ newdf = filter_dataframe(df)
 st.dataframe(newdf)
 
 # Create a Task vs Models DataFrame (pivot table)
-pivot_df = pd.pivot_table(newdf, index='ModelName_short', columns='Task_short', values='balanced_accuracy')
+pivot_df = pd.pivot_table(newdf, index='Model Name', columns='Task', values='average performance')
 styled_df = pivot_df.style\
     .format("{:.2f}")\
     .background_gradient(cmap='Blues')\
@@ -238,19 +254,19 @@ st.header("Plots")
 # Create a chart based on the selected type
 if chart_type == "Bar Chart":
     # Verify required columns
-    required_columns = ['ModelName_short', 'average_performance', 'Task_short']
+    required_columns = ['Model Name', 'average performance', 'Task']
     missing_columns = [col for col in required_columns if col not in newdf.columns]
     if missing_columns:
         st.error(f"Missing columns for Bar Chart: {missing_columns}")
     else:
         try:
             chart = alt.Chart(newdf).mark_bar(opacity=0.8).encode(
-                x=alt.X('ModelName_short', sort='-y', title="Model Name",
+                x=alt.X('Model Name', sort='-y', title="Model Name",
                         axis=alt.Axis(grid=False, labelAngle=45, labelOverlap=False, labelLimit=0)),
-                y=alt.Y('average_performance', title="Cumulative Average Performance",
+                y=alt.Y('average performance', title="Cumulative Average Performance",
                         axis=alt.Axis(grid=True, gridColor="#D3D3D3", gridDash=[2,2])),
-                color=alt.Color("Task_short", title="Task", scale=alt.Scale(scheme='tableau20')),
-                tooltip=['ModelName_short', 'average_performance', 'Task_short']
+                color=alt.Color("Task", title="Task", scale=alt.Scale(scheme='tableau20')),
+                tooltip=['Model Name', 'average performance', 'Task']
             ).properties(
                 height=500
             ).configure_axis(
@@ -265,19 +281,19 @@ if chart_type == "Bar Chart":
             st.error(f"Error rendering Bar Chart: {str(e)}")
 elif chart_type == "Area Chart":
     # Verify required columns
-    required_columns = ['ModelName_short', 'average_performance', 'Task_short']
+    required_columns = ['Model Name', 'average performance', 'Task']
     missing_columns = [col for col in required_columns if col not in newdf.columns]
     if missing_columns:
         st.error(f"Missing columns for Area Chart: {missing_columns}")
     else:
         try:
             chart = alt.Chart(newdf).mark_area(opacity=0.6).encode(
-                x=alt.X('ModelName_short', sort='-y', title="Model Name",
+                x=alt.X('Model Name', sort='-y', title="Model Name",
                         axis=alt.Axis(grid=False, labelAngle=45, labelOverlap=False, labelLimit=0)),
-                y=alt.Y('average_performance', title="Cumulative Average Performance",
+                y=alt.Y('average performance', title="Cumulative Average Performance",
                         axis=alt.Axis(grid=True, gridColor="#D3D3D3", gridDash=[2,2])),
-                color=alt.Color("Task_short", title="Task", scale=alt.Scale(scheme='tableau20')),
-                tooltip=['ModelName_short', 'average_performance', 'Task_short']
+                color=alt.Color("Task", title="Task", scale=alt.Scale(scheme='tableau20')),
+                tooltip=['Model Name', 'average performance', 'Task']
             ).properties(
                 height=500
             ).configure_axis(
@@ -292,30 +308,30 @@ elif chart_type == "Area Chart":
             st.error(f"Error rendering Area Chart: {str(e)}")
 elif chart_type == "Heatmap":
     # Verify required columns
-    required_columns = ['ModelName_short', 'Task_short', 'average_performance']
+    required_columns = ['Model Name', 'Task', 'average performance']
     missing_columns = [col for col in required_columns if col not in newdf.columns]
     if missing_columns:
         st.error(f"Missing columns for Heatmap: {missing_columns}")
     else:
         try:
             base = alt.Chart(newdf).encode(
-                x=alt.X('ModelName_short', title="Model Name",
+                x=alt.X('Model Name', title="Model Name",
                         axis=alt.Axis(grid=False, labelAngle=45, labelOverlap=False, labelLimit=0)),
-                y=alt.Y('Task_short', title="Task",
+                y=alt.Y('Task', title="Task",
                         axis=alt.Axis(grid=False, labelOverlap=False, labelLimit=0)),
             )
             heatmap = base.mark_rect(stroke='white', strokeWidth=1).encode(
-                color=alt.Color('average_performance',
+                color=alt.Color('average performance',
                                 scale=alt.Scale(scheme='viridis'),
                                 legend=alt.Legend(title="Average Performance"))
             )
             color = (
-                alt.when(alt.datum.average_performance > 0.70)
+                alt.when(alt.datum[["average performance"]] > 0.70)
                 .then(alt.value("black"))
                 .otherwise(alt.value("white"))
             )
             text = base.mark_text(baseline='middle').encode(
-                text=alt.Text('average_performance', format=".2f"),
+                text=alt.Text('average performance', format=".2f"),
                 color=color
             )
             chart = (heatmap + text).configure_axis(
@@ -332,23 +348,23 @@ elif chart_type == "Heatmap":
             st.error(f"Error rendering Heatmap: {str(e)}")
 elif chart_type == "Models Line Chart":
     # Verify required columns
-    required_columns = ['Task_short', 'average_performance', 'ModelName_short']
+    required_columns = ['Task', 'average performance', 'Model Name']
     missing_columns = [col for col in required_columns if col not in newdf.columns]
     if missing_columns:
         st.error(f"Missing columns for Models Line Chart: {missing_columns}")
     else:
         try:
             chart = alt.Chart(newdf).mark_line(point=True, strokeWidth=2).encode(
-                x=alt.X('Task_short', sort='-y', title="Task",
+                x=alt.X('Task', sort='-y', title="Task",
                         axis=alt.Axis(grid=False, labelAngle=45, labelOverlap=False, labelLimit=0)),
-                y=alt.Y("average_performance", title="Average Performance",
+                y=alt.Y("average performance", title="Average Performance",
                         axis=alt.Axis(grid=True, gridColor="#D3D3D3", gridDash=[2,2])),
-                color=alt.Color("ModelName_short", title="Model Name", scale=alt.Scale(scheme='tableau20')),
-                tooltip=['Task_short', 'average_performance', 'ModelName_short']  # Fixed syntax error
+                color=alt.Color("Model Name", title="Model Name", scale=alt.Scale(scheme='tableau20')),
+                tooltip=['Task', 'average performance', 'Model Name']  # Fixed syntax error
             ).transform_window(
                 rank="rank()",
-                sort=[alt.SortField("average_performance", order="descending")],
-                groupby=["ModelName_short"]
+                sort=[alt.SortField("average performance", order="descending")],
+                groupby=["Model Name"]
             ).properties(
                 height=550
             ).configure_axis(
@@ -363,7 +379,7 @@ elif chart_type == "Models Line Chart":
             st.error(f"Error rendering Models Line Chart: {str(e)}")
 elif chart_type == "Models Dot Chart":
     # Verify required columns
-    required_columns = ['ModelName_short', 'average_performance', 'Task_short']
+    required_columns = ['Model Name', 'average performance', 'Task']
     missing_columns = [col for col in required_columns if col not in newdf.columns]
     if missing_columns:
         st.error(f"Missing columns for Models Dot Chart: {missing_columns}")
@@ -371,24 +387,24 @@ elif chart_type == "Models Dot Chart":
         # Handle missing values
         chart_df = newdf[required_columns].dropna()
         try:
-            # Calculate the overall average performance for each ModelName_short
-            model_performance = chart_df.groupby('ModelName_short')['average_performance'].mean().reset_index()
+            # Calculate the overall average performance for each Model Name
+            model_performance = chart_df.groupby('Model Name')['average performance'].mean().reset_index()
             
             # Sort models by average performance in descending order
-            sorted_models = model_performance.sort_values(by='average_performance', ascending=False)['ModelName_short'].tolist()
+            sorted_models = model_performance.sort_values(by='average performance', ascending=False)['Model Name'].tolist()
             
             # Create the chart with the Y-axis sorted by performance
             chart = alt.Chart(chart_df).mark_line(point=True, strokeWidth=2).encode(
-                x=alt.X('average_performance', sort='-y', title="Average Performance",
+                x=alt.X('average performance', sort='-y', title="Average Performance",
                         axis=alt.Axis(grid=True, gridColor="#D3D3D3", gridDash=[2,2])),
-                y=alt.Y('ModelName_short', title="Model Name", sort=sorted_models,
+                y=alt.Y('Model Name', title="Model Name", sort=sorted_models,
                         axis=alt.Axis(grid=False, labelOverlap=False, labelLimit=0)),
-                color=alt.Color("ModelName_short", title="Model Name", scale=alt.Scale(scheme='tableau20')),
-                tooltip=['average_performance', 'ModelName_short', 'Task_short']
+                color=alt.Color("Model Name", title="Model Name", scale=alt.Scale(scheme='tableau20')),
+                tooltip=['average performance', 'Model Name', 'Task']
             ).transform_window(
                 rank="rank()",
-                sort=[alt.SortField("average_performance", order="descending")],
-                groupby=["Task_short"]
+                sort=[alt.SortField("average performance", order="descending")],
+                groupby=["Task"]
             ).properties(
                 height=750
             ).configure_axis(
