@@ -37,7 +37,7 @@ We benchmark **31 foundation models** across **41 computational pathology tasks*
 We evaluate performance across data from **TCGA**, **CPTAC**, and several **external out-of-domain** datasets. Tasks include tumor classification, molecular subtyping, tumor stage, and pathway prediction.
 
 
-![visualization (5)](https://github.com/user-attachments/assets/5074d857-9b6a-417b-9866-f657fbdd5dfa)
+<img width="855" height="439" alt="Screenshot 2025-09-03 at 10 28 29 AM" src="https://github.com/user-attachments/assets/6ad498f1-34ab-485b-9566-a33b54101e6e" />
 
 ---
 
