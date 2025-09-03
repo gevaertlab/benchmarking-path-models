@@ -44,7 +44,7 @@ st.markdown(
 )
 
 # Load and preprocess DataFrame
-df = pd.read_csv("~/Documents/benchmarking_results/benchmarking_wci.csv")
+df = pd.read_csv("../data/benchmarking_wci.csv")
 df = df.drop(columns=['ModelName'])
 df = df.rename(columns={
     'ModelName_short': 'Model Name',
