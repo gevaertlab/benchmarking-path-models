@@ -95,7 +95,11 @@ We recommend using the provided Conda environment for reproducibility:
 conda env create -f environments/linear_eval.yml
 conda activate linear_eval
 ```
-3. Example: Run evaluation script for UNI
+
+3. Patch extraction
+To extract patches from whole-slide images (WSIs), please use the script src/patch_gen_hdf5.py. An example script to run the patch extraction: src/submit_patch_gen_hdf5.sh
+
+4. Example: Run evaluation script for UNI
 
 ```
 python -m torch.distributed.launch \
