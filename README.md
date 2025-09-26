@@ -73,6 +73,12 @@ You can explore the complete benchmark results interactively via our web portal:
 
 ## 🚀 Getting Started
 
+### ⚙️ System Requirements
+- Operating system(s) tested: Linux (tested on SUSE Linux Enterprise Server 15 SP6; expected to run on other modern Linux distributions such as Ubuntu 22.04 or CentOS 7)
+- Dependencies: fully specified in `environments/linear_eval.yml`
+- Hardware: standard x86_64 CPU; GPU recommended for faster model evaluation
+- Typical install time for conda environment on a "normal" desktop computer: ~10–15 minutes
+
 1. Clone the repository
 
 ```bash
