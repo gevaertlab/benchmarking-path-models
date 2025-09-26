@@ -130,7 +130,13 @@ python -m torch.distributed.launch \
   > ../eval_brain/IDHmut_classification/"$out_dir"/logtesdata.txt
 
 ```
+## 💻 Computational Requirements
 
+- Model inference time depends on the model, task, and dataset size.  
+  - Typically, evaluation of a single model takes **a couple of hours** on a standard desktop with 4 GPUs or a moderately-sized CPU cluster.  
+- Scripts support **parallel evaluation** via PyTorch Distributed for multi-GPU setups.  
+- Exact runtime may vary depending on hardware, batch size, and data preprocessing.
+  
 ## 📖 Citation
 If you use this work in your research, please cite our preprint:
 
