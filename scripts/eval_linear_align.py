@@ -40,7 +40,74 @@ import clip
 from PIL import Image
 from transformers import AlignProcessor, AlignModel
 
-def frozen_features(arch,model,images,n , avgpool,batch_size):
+def frozen_features(arch, model, images, batch_size, chunk_size=64):
+    """
+    images: (B, bag, C, H, W)
+    returns: (B, 640)
+    """
+    B, bag, C, H, W = images.shape
+    device = images.device
+
+    flat = images.view(-1, C, H, W)  # (B*bag, C, H, W)
+
+    outputs = []
+
+    with torch.no_grad():
+        for i in range(0, flat.size(0), chunk_size):
+            chunk = flat[i : i + chunk_size]
+
+            inputs = model.processor(
+                images=list(chunk),
+                return_tensors="pt",
+                do_rescale=False,
+            )
+
+            pixel_values = inputs["pixel_values"].to(device)
+
+            feats = model.get_image_features(pixel_values=pixel_values)
+            outputs.append(feats)
+
+    output = torch.cat(outputs, dim=0)          # (B*bag, 640)
+    output = output.view(B, bag, -1).mean(dim=1)  # (B, 640)
+
+    return output
+
+def frozen_features_old(arch, model,  images, batch_size):
+    """
+    images: (B, bag, C, H, W)
+    returns: (B, 640)
+    """
+    with torch.no_grad():
+        # flatten bag
+        individual_patch = images.view(
+            -1,
+            images.size(2),
+            images.size(3),
+            images.size(4),
+        )  # (B*bag, C, H, W)
+        processor = model.processor
+        # ALIGN preprocessing
+        inputs = processor(
+            images=list(individual_patch),
+            return_tensors="pt",
+            do_rescale=False,
+        )
+
+        pixel_values = inputs["pixel_values"].to(images.device)
+
+        # pooled ALIGN embeddings
+        output = model.get_image_features(
+            pixel_values=pixel_values
+        )  # (B*bag, 640)
+
+        # reshape back to bag
+        output = output.view(batch_size, -1, output.size(-1))  # (B, bag, 640)
+        output = torch.mean(output, dim=1)  # (B, 640)
+
+    return output
+
+
+def frozen_features_oldv1(arch,model,images,n , avgpool,batch_size):
     with torch.no_grad():
         if "vit" in args.arch:
             new_output = []
@@ -95,7 +162,7 @@ def extract_features(arch, model, loader, n, avgpool, output_dir, name=''):
         print('index shape is ..',index.shape)
         batch_size = images.shape[0]
         # forward
-        output = frozen_features(arch, model, images, n, avgpool,batch_size)
+        output = frozen_features(arch, model, images,batch_size)
         features.append([output.cpu(), index])
     torch.save(features, filepath)
     return features
@@ -138,7 +205,7 @@ def eval_linear(args):
         print("hugging face model")
         processor = AlignProcessor.from_pretrained("kakaobrain/align-base")
         model = AlignModel.from_pretrained("kakaobrain/align-base")
-
+        model.processor = processor
         model.cuda()
         model.eval()
         embed_dim=640
@@ -150,7 +217,7 @@ def eval_linear(args):
         pth_transforms.Resize(256, interpolation=3),
         pth_transforms.CenterCrop(224),
         pth_transforms.ToTensor(),
-        pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+       # pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     ])
     
     print('embed_dim is..', embed_dim)
@@ -179,7 +246,7 @@ def eval_linear(args):
             pth_transforms.RandomResizedCrop(224),
             pth_transforms.RandomHorizontalFlip(),
             pth_transforms.ToTensor(),
-            pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+            #pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
     ## filename of fold 0 
     train_csv_fold0 = args.train_csv_path
@@ -405,7 +472,8 @@ def train(has_frozen, arch,model, linear_classifier, optimizer, train_loader, ep
         if has_frozen:
             output = linear_classifier(inp)
         else:
-            output = frozen_features(arch, model, inp, n, avgpool)
+            batch_size = inp.shape[0]
+            output = frozen_features(arch, model, inp, batch_size)
             output = linear_classifier(output)
         #output = linear_classifier(output)
 
@@ -452,7 +520,8 @@ def validate_network(has_frozen, arch, val_loader, model, linear_classifier, n, 
         if has_frozen:
             output = linear_classifier(inp)
         else:
-            output = frozen_features(arch, model, inp, n, avgpool)
+            batch_size = inp.shape[0]
+            output = frozen_features(arch, model, inp, batch_size)
             output = linear_classifier(output)
         loss = nn.CrossEntropyLoss()(output, target)
         #print('Output  in validate network is..', output)

@@ -40,9 +40,41 @@ import clip
 from PIL import Image
 #from transformers import CLIPProcessor, CLIPModel,CLIPVisionConfig,CLIPVisionModel
 from transformers import AutoImageProcessor, AutoModel
+from transformers import Blip2Processor, Blip2Model
+from torchvision.transforms.functional import to_pil_image
+
+def frozen_features(arch, model, images, batch_size):
+    """
+    images: (B, bag, C, H, W)
+    returns: (B, 256)
+    """
+    with torch.no_grad():
+        B, bag, C, H, W = images.shape
+        device = images.device
+
+        # flatten bag
+        flat = images.view(-1, C, H, W)  # (B*bag, C, H, W)
+        flat_pil = [to_pil_image(img.cpu()) for img in flat]
+        # BLIP-2 preprocessing
+        inputs = model.processor(
+            images=flat_pil,
+            return_tensors="pt",
+            do_rescale=False,   # images already in [0,1]
+        )
+
+        inputs = {k: v.to(device) for k, v in inputs.items()}
+
+        # BLIP-2 image features (Q-Former pooled)
+        output = model.get_image_features(**inputs)  # (B*bag, 256)
+
+        # reshape back to bag
+        output = output.view(B, bag, -1)  # (B, bag, 256)
+        output = output.mean(dim=1)       # (B, 256)
+
+    return output
 
 
-def frozen_features(arch,model,images,n , avgpool,batch_size):
+def frozen_features_old(arch,model,images,n , avgpool,batch_size):
     with torch.no_grad():
         if "vit" in args.arch:
             new_output = []
@@ -94,7 +126,7 @@ def extract_features(arch, model, loader, n, avgpool, output_dir, name=''):
         print('index shape is ..',index.shape)
         batch_size = images.shape[0]
         # forward
-        output = frozen_features(arch, model, images, n, avgpool,batch_size)
+        output = frozen_features(arch, model, images,batch_size)
         features.append([output.cpu(), index])
     torch.save(features, filepath)
     return features
@@ -127,12 +159,26 @@ def eval_linear(args):
     if 'scratch' in args.train_from_scratch:
         print("training from scratch...")
         model.train()
-    else:
+    elif 'pretrain' in args.train_from_scratch:
         print("training from pretrained weights...")
         model.eval()
         # load weights to evaluate
         embed_dim=768
         utils.load_pretrained_weights(model, args.pretrained_weights, args.checkpoint_key, args.arch, args.patch_size)
+    else:
+        from transformers import AutoProcessor, BlipModel
+        print("Using BLIP image encoder")
+        model = BlipModel.from_pretrained(
+            "Salesforce/blip-image-captioning-base",
+            torch_dtype=torch.float16,
+        )
+        processor = AutoProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+
+        model.processor = processor
+        model.cuda()
+        model.eval()
+        embed_dim = 512   # BLIP image embedding dim
+
     print(f"Model {args.arch} built.")
 
     
@@ -141,7 +187,7 @@ def eval_linear(args):
         pth_transforms.Resize(256, interpolation=3),
         pth_transforms.CenterCrop(224),
         pth_transforms.ToTensor(),
-        pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+        #pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     ])
     
     print('embed_dim is..', embed_dim)
@@ -170,7 +216,7 @@ def eval_linear(args):
             pth_transforms.RandomResizedCrop(224),
             pth_transforms.RandomHorizontalFlip(),
             pth_transforms.ToTensor(),
-            pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+            #pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
     ## filename of fold 0 
     train_csv_fold0 = args.train_csv_path
@@ -394,9 +440,11 @@ def train(has_frozen, arch,model, linear_classifier, optimizer, train_loader, ep
         target = target.cuda(non_blocking=True)
         # forward
         if has_frozen:
+            inp = inp.float()
             output = linear_classifier(inp)
         else:
-            output = frozen_features(arch, model, inp, n, avgpool)
+            batch_size = inp.shape[0]
+            output = frozen_features(arch, model, inp, batch_size)
             output = linear_classifier(output)
         #output = linear_classifier(output)
 
@@ -441,9 +489,11 @@ def validate_network(has_frozen, arch, val_loader, model, linear_classifier, n, 
 
         # forward
         if has_frozen:
+            inp = inp.float()
             output = linear_classifier(inp)
         else:
-            output = frozen_features(arch, model, inp, n, avgpool)
+            batch_size = inp.shape[0]
+            output = frozen_features(arch, model, inp, batch_size)
             output = linear_classifier(output)
         loss = nn.CrossEntropyLoss()(output, target)
         #print('Output  in validate network is..', output)

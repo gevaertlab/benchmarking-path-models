@@ -15,6 +15,7 @@ import os
 import argparse
 import json
 from pathlib import Path
+import sys
 
 import torch
 from torch import nn
@@ -111,6 +112,15 @@ def eval_linear(args):
         model = torchvision_models.__dict__[args.arch]()
         embed_dim = model.fc.weight.shape[1]
         model.fc = nn.Identity()
+    # 4. ✅ BEiT-3 (THIS WAS MISSING / NOT ACTIVE)
+    elif "beit3" in args.arch:
+        print("Using BEiT-3 model from timm")
+
+        model = timm.create_model(
+            args.arch,              # beit3_large_patch16_224
+            pretrained=True,
+            num_classes=0,
+        )
     else:
         print(f"Unknow architecture: {args.arch}")
         sys.exit(1)
@@ -118,12 +128,23 @@ def eval_linear(args):
     if 'scratch' in args.train_from_scratch:
         print("training from scratch...")
         model.train()
-    else:
+    elif 'pretrain' in args.train_from_scratch:
         print("training from pretrained weights...")
         model.eval()
         # load weights to evaluate
         embed_dim=1024
         utils.load_pretrained_weights(model, args.pretrained_weights, args.checkpoint_key, args.arch, args.patch_size)
+    else:
+        print("Using BEiT-3 model from timm")
+
+        model = timm.create_model(
+            'beit3_large_patch16_224',
+            pretrained=True,
+            num_classes=0,   # IMPORTANT: removes classifier
+        )
+        embed_dim=1024
+        model.cuda()
+        model.eval()
     print(f"Model {args.arch} built.")
 
     

@@ -44,7 +44,7 @@ def frozen_features(arch,model,images,n , avgpool,batch_size):
         if "vit" in args.arch:
             new_output = []
             individual_patch = images.view(-1, images.size(2), images.size(3),images.size(4))
-            output = model.encode_image(individual_patch)
+            output = model.encode_image(individual_patch,proj_contrast=False,normalize=False)
             print('output shape is ..', output.shape)
             reshaped_patch = output.view(batch_size,-1,output.size(1))
             print('output shape before mean is..' , reshaped_patch.shape)
@@ -57,7 +57,7 @@ def frozen_features(arch,model,images,n , avgpool,batch_size):
         else:
             new_output = []
             individual_patch = images.view(-1, images.size(2), images.size(3),images.size(4))
-            output = model.encode_image(individual_patch)
+            output = model.encode_image(individual_patch,proj_contrast=False,normalize=False)
             print('output shape is ..', output.shape)
             reshaped_patch = output.view(batch_size,-1,output.size(1))
             print('output shape before mean is..' , reshaped_patch.shape)
@@ -131,16 +131,19 @@ def eval_linear(args):
         model.cuda()
         model.eval()
         embed_dim=512
+        # CONCH REQUIRES ITS OWN PREPROCESS
+        train_transform = preprocess
+        val_transform   = preprocess
     print(f"Model {args.arch} built.")
 
     
     # ============ preparing data ... ============
-    val_transform = pth_transforms.Compose([
-        pth_transforms.Resize(256, interpolation=3),
-        pth_transforms.CenterCrop(224),
-        pth_transforms.ToTensor(),
-        pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
-    ])
+    #val_transform = pth_transforms.Compose([
+     #   pth_transforms.Resize(256, interpolation=3),
+      #  pth_transforms.CenterCrop(224),
+      #  pth_transforms.ToTensor(),
+       # pth_transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    #])
     
     print('embed_dim is..', embed_dim)
     linear_classifier = LinearClassifier(embed_dim, num_labels=args.num_labels)
