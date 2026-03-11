@@ -4,11 +4,12 @@
 ## 👥 Authors
 
 **Rohan Bareja**<sup>1</sup>, **Francisco Carrillo-Perez**<sup>1</sup>, **Yuanning Zheng**<sup>1</sup>, **Marija Pizurica**<sup>1</sup>  
-**Tarak Nath Nandi**<sup>2</sup>, **Jeanne Shen**<sup>3</sup>, **Ravi Madduri**<sup>2</sup>, **Olivier Gevaert**<sup>1</sup>  
+**Tarak Nath Nandi**<sup>2</sup>, **Lu Tian**<sup>3</sup>,**Jeanne Shen**<sup>4</sup>, **Ravi Madduri**<sup>2</sup>, **Olivier Gevaert**<sup>1</sup>  
 
 <sup>1</sup>Stanford Center for Biomedical Informatics Research (BMIR), Stanford University, School of Medicine  
 <sup>2</sup>Data Science and Learning Division, Argonne National Laboratory  
-<sup>3</sup>Department of Pathology, Stanford University, School of Medicine
+<sup>3</sup>Department of Biomedical Data Science, Stanford University, School of Medicine, Stanford, CA, USA
+<sup>4</sup>Department of Pathology, Stanford University, School of Medicine
 
 ---
 
