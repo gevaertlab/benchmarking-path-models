@@ -41,6 +41,8 @@ We evaluate performance across data from **TCGA**, **CPTAC**, and several **exte
 
 <img width="855" height="439" alt="Screenshot 2025-09-03 at 10 28 29 AM" src="https://github.com/user-attachments/assets/6ad498f1-34ab-485b-9566-a33b54101e6e" />
 
+<img width="948" height="490" alt="Screenshot 2026-03-11 at 9 38 43 AM" src="https://github.com/user-attachments/assets/22f094eb-8d3c-4b9c-a74f-ec63b58d24c0" />
+
 ---
 
 ## 📊 PathBench
