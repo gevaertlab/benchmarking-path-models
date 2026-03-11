@@ -53,10 +53,15 @@ You can explore the complete benchmark results interactively via our web portal:
 
 ## 📈 Key Findings
 
-- **Virchow2** achieved the highest performance across TCGA, CPTAC, and external datasets.
-- **Path-VM** models outperformed both VLMs and general-purpose VMs on average.
-- **Model size and dataset size** were not reliably associated with better performance.
-- A **fusion model** combining top-performing encoders generalized best across tissue types and institutions.
+- Several pathology-specific vision foundation models consistently ranked among the top performers, including Virchow2, Prov-GigaPath, H-optimus-0, UNI, and UNI2, across a large benchmark of 41 pathology tasks spanning TCGA, CPTAC, external benchmarks, and out-of-domain datasets.
+
+- Pathology-specific vision models (Path-VM) showed a clear advantage over pathology vision–language models (Path-VLM), while demonstrating performance comparable to general vision models (VM), with differences across model families varying by task and dataset.
+
+- Model size and reported pretraining dataset size alone did not consistently explain downstream performance, suggesting that additional factors such as training data composition, tissue diversity, and architectural design likely influence model generalization.
+
+- Explicit separation of TCGA and non-TCGA evaluations revealed heterogeneous generalization behavior across datasets, highlighting the importance of evaluating pathology foundation models beyond in-domain benchmarks.
+
+- Model ensembling using a late fusion strategy improved aggregate performance across tasks and datasets, indicating that different foundation models capture complementary visual representations.
 
 ---
 
