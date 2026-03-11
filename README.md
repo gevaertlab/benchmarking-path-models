@@ -28,7 +28,7 @@ This repository accompanies our paper:
 > **Evaluating Vision and Pathology Foundation Models for Computational Pathology: A Comprehensive Benchmark Study**  
 > [medRxiv preprint, May 2025](https://www.medrxiv.org/content/10.1101/2025.05.08.25327250v1)
 
-We benchmark **31 foundation models** across **41 computational pathology tasks**, including:
+We benchmark **32 foundation models** across **41 computational pathology tasks**, including:
 
 - General-purpose **Vision Models (VM)**
 - **Vision-Language Models (VLM)**
