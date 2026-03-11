@@ -9,7 +9,6 @@
 <sup>1</sup>Stanford Center for Biomedical Informatics Research (BMIR), Stanford University, School of Medicine  
 <sup>2</sup>Data Science and Learning Division, Argonne National Laboratory  
 <sup>3</sup>Department of Biomedical Data Science, Stanford University, School of Medicine, Stanford, CA, USA
-
 <sup>4</sup>Department of Pathology, Stanford University, School of Medicine
 
 ---
