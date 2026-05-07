@@ -176,7 +176,7 @@ python -m torch.distributed.launch \
 | General Vision-Language | BLIP-B16-14M | https://github.com/salesforce/BLIP | BLIP | ViT-base | ~85 | NA | 14 ImageNet images | General images + text | ImageNet | Public GitHub |
 | General Vision-Language | ALIGN-base | https://huggingface.co/kakaobrain/align-base/tree/main | Contrastive learning | EfficientNet + BERT | ~746 | NA | 700 image-text pairs | General images + text | Web image-text pairs | Hugging Face checkpoint |
 | General Vision-Language | BEiT-3-L16 | https://github.com/microsoft/unilm/tree/master/beit3 | Multimodal pretraining | ViT-large / BEiT-3 | ~307 | NA | ImageNet-21K + text | General images + text | ImageNet-21K, text corpus | Public GitHub |
-|
+
 
 
 
