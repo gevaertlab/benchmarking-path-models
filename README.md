@@ -178,16 +178,6 @@ python -m torch.distributed.launch \
 | General Vision-Language | BEiT-3-L16 | Multimodal pretraining | ViT-large / BEiT-3 | ~307 | NA | ImageNet-21K + text | General images + text | ImageNet-21K, text corpus | https://github.com/microsoft/unilm/tree/master/beit3 | Public GitHub |
 |
 
-## Models not used in this paper
-
-The following models were listed in related repositories or earlier notes, but were not used in this paper and are therefore excluded from the supported-model table:
-
-- GigaSSL
-- CPLIP
-- CHIEF-CTransPath
-- MADELEINE
-- PRISM
-- 
 ## 💻 Computational Requirements
 
 - Model inference time depends on the model, task, and dataset size.  
