@@ -142,41 +142,43 @@ python -m torch.distributed.launch \
 
 ## Supported Models and Model Sources
 
-| Category | Model Name | SSL / Pretraining Method | Model Architecture | Parameters (M) | WSIs (M) | Patches / Image-Text Pairs (M) | Cancer / Tissue Types | Data Source | Weights / Source | Notes |
-|---|---|---|---|---:|---:|---:|---|---|---|---|
-| Pathology Vision | cTransPath | Contrastive learning / MoCo v3 | CNN + Swin Transformer | ~27 | 0.032 | 15 | 32 cancer types | TCGA, PAIP | https://github.com/Xiyue-Wang/TransPath | Public weights available through repo |
-| Pathology Vision | Kaiko | DINO | ViT-base | ~85 | 0.029 | NA | 32 cancer types | TCGA | https://github.com/kaiko-ai/towards_large_pathology_fms | Kaiko ViT-base used in this paper |
-| Pathology Vision | HIPT | DINO | ViT-small | ~21 | 0.010 | 104 | 33 cancer types | TCGA | https://github.com/mahmoodlab/HIPT/tree/master/HIPT_4K/Checkpoints | Public checkpoint folder |
-| Pathology Vision | Virchow | DINOv2 | ViT-huge | ~632 | 1.5 | 2000 | NA | Proprietary | https://huggingface.co/paige-ai/Virchow | Hugging Face model; access may be gated |
-| Pathology Vision | Lunit / DinoSSLPath | DINO | ViT-small | ~21 | 0.036 | 32.5 | NA | TCGA, TULIP | https://github.com/lunit-io/benchmark-ssl-pathology/releases/tag/pretrained-weights | Public pretrained weights |
-| Pathology Vision | UNI | DINOv2 | ViT-large | ~307 | 0.100 | 100 | 20 tissue types | Proprietary, GTEx | https://huggingface.co/MahmoodLab/UNI | Hugging Face model; access may be gated |
-| Pathology Vision | Hibou-B | DINOv2 | ViT-base | ~85 | 1.0 | 1200 | NA | Proprietary | https://huggingface.co/histai/hibou-b | Hugging Face model used in this paper |
-| Pathology Vision | Phikon | iBOT | ViT-base | ~85 | 0.006 | 40 | 16 cancer types | TCGA | https://huggingface.co/owkin/phikon | Public Hugging Face model |
-| Pathology Vision | GPFM | DINOv2 | ViT-large | ~307 | 0.086 | 190 | 34 tissue types | TCGA, PAIP, 49 public datasets | https://huggingface.co/majiabo/GPFM | Also see GitHub: https://github.com/birkhoffkiki/GPFM |
-| Pathology Vision | H-optimus-0 | DINOv2 | ViT-giant | ~1100 | 0.5 | NA | NA | Proprietary | https://huggingface.co/bioptimus/H-optimus-0 | Hugging Face model |
-| Pathology Vision | UNI2 | DINOv2 | ViT-huge | ~632 | 0.350 | 200 | NA | Proprietary | https://huggingface.co/MahmoodLab/UNI2-h | Hugging Face model; access may be gated |
-| Pathology Vision | Phikon-v2 | DINOv2 | ViT-large | ~307 | 0.058 | 460 | 30 cancer sites | TCGA, GTEx, CPTAC, TCIA | https://huggingface.co/owkin/phikon-v2 | Public Hugging Face model |
-| Pathology Vision | Virchow2 | DINOv2 | ViT-huge | ~632 | 3.1 | NA | 17 tissue types | Proprietary | https://huggingface.co/paige-ai/Virchow2 | Hugging Face model; access may be gated |
-| Pathology Vision | Prov-GigaPath | DINOv2 | ViT-giant | ~1100 | 0.171 | 1300 | 31 tissue types | Proprietary | https://huggingface.co/prov-gigapath/prov-gigapath | Also see GitHub: https://github.com/prov-gigapath/prov-gigapath |
-| Pathology Vision | H-optimus-mini / H0-mini | DINOv2 distilled | ViT-base | ~85 | 0.006 | 43 | 16 tissue types | TCGA | https://huggingface.co/bioptimus/H0-mini | Lightweight distilled H-optimus model |
-| Pathology Vision | EXAONEPath | DINOv1 | ViT-base | ~85 | 0.030 | 285 | - | Public datasets | https://huggingface.co/LGAI-EXAONE/EXAONEPath | Public Hugging Face model |
-| Pathology Vision-Language | PLIP | CLIP | ViT-base | ~85 | NA | 0.208 image-text pairs | Pathology | Pathology image-text pairs from Twitter, PathLAION | https://github.com/PathologyFoundation/plip | Public GitHub |
-| Pathology Vision-Language | QuiltNet-B16 | CLIP | ViT-base | ~85 | NA | 1.0 image-text pairs | Pathology | Quilt-1M / histopathology videos | https://huggingface.co/wisdomik/QuiltNet-B-16 | Public Hugging Face model |
-| Pathology Vision-Language | BiomedCLIP | CLIP | ViT-base | ~85 | NA | 14-15 image-text pairs | Biomedical | Biomedical image-text pairs | https://huggingface.co/microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224 | Public Hugging Face model |
-| Pathology Vision-Language | MI-Zero PubMedBERT | Contrastive learning | ViT-small | ~21 | NA | 0.033 image-text pairs | Pathology | Histopathology image-caption pairs | https://github.com/mahmoodlab/MI-Zero | Public GitHub |
-| Pathology Vision-Language | MI-Zero ClinicalBERT | Contrastive learning | ViT-small | ~21 | NA | 0.033 image-text pairs | Pathology | Histopathology image-caption pairs | https://github.com/mahmoodlab/MI-Zero | Public GitHub |
-| Pathology Vision-Language | CONCH | CoCa | ViT-base | ~85 | NA | 1.17 image-text pairs | Pathology | Histopathology caption pairs | https://github.com/mahmoodlab/CONCH | Public GitHub; access may be gated |
-| Pathology Vision-Language | TITAN | iBOT + CoCa | ViT-base | ~85 | 0.336 | 0.423 image-text pairs | Pathology | WSIs and image captions | https://huggingface.co/MahmoodLab/TITAN | Hugging Face model |
-| General Vision | DINO-S16 | DINO | ViT-small / 16 | ~21 | NA | 14 ImageNet images | General images | ImageNet | https://github.com/facebookresearch/dino | Public GitHub |
-| General Vision | DINO-B16 | DINO | ViT-base / 16 | ~85 | NA | 14 ImageNet images | General images | ImageNet | https://github.com/facebookresearch/dino | Public GitHub |
-| General Vision | DINOv2-L | DINOv2 | ViT-large | ~300 | NA | 142 LVD images | General images | LVD-142M | https://github.com/facebookresearch/dinov2 | Public GitHub |
-| General Vision | iBOT-B16 | iBOT | ViT-base / 16 | ~85 | NA | ImageNet-22K | General images | ImageNet-22K | https://github.com/bytedance/ibot#pre-trained-models | Public GitHub |
-| General Vision | iBOT-L16 | iBOT | ViT-large / 16 | ~307 | NA | ImageNet-22K | General images | ImageNet-22K | https://github.com/bytedance/ibot#pre-trained-models | Public GitHub |
-| General Vision-Language | CLIP-B16 | CLIP / contrastive learning | ViT-base / 16 | ~115 | NA | 400 image-text pairs | General images + text | Web image-text pairs | https://huggingface.co/openai/clip-vit-base-patch16 | Also see GitHub: https://github.com/openai/CLIP |
-| General Vision-Language | BLIP-B16-14M | BLIP | ViT-base | ~85 | NA | 14 ImageNet images | General images + text | ImageNet | https://github.com/salesforce/BLIP | Public GitHub |
-| General Vision-Language | ALIGN-base | Contrastive learning | EfficientNet + BERT | ~746 | NA | 700 image-text pairs | General images + text | Web image-text pairs | https://huggingface.co/kakaobrain/align-base/tree/main | Hugging Face checkpoint |
-| General Vision-Language | BEiT-3-L16 | Multimodal pretraining | ViT-large / BEiT-3 | ~307 | NA | ImageNet-21K + text | General images + text | ImageNet-21K, text corpus | https://github.com/microsoft/unilm/tree/master/beit3 | Public GitHub |
+| Category | Model Name | Weights / Source | SSL / Pretraining Method | Model Architecture | Parameters (M) | WSIs (M) | Patches / Image-Text Pairs (M) | Cancer / Tissue Types | Data Source | Notes |
+|---|---|---|---|---|---:|---:|---:|---|---|---|
+| Pathology Vision | cTransPath | https://github.com/Xiyue-Wang/TransPath | Contrastive learning / MoCo v3 | CNN + Swin Transformer | ~27 | 0.032 | 15 | 32 cancer types | TCGA, PAIP | Public weights available through repo |
+| Pathology Vision | Kaiko | https://github.com/kaiko-ai/towards_large_pathology_fms | DINO | ViT-base | ~85 | 0.029 | NA | 32 cancer types | TCGA | Kaiko ViT-base used in this paper |
+| Pathology Vision | HIPT | https://github.com/mahmoodlab/HIPT/tree/master/HIPT_4K/Checkpoints | DINO | ViT-small | ~21 | 0.010 | 104 | 33 cancer types | TCGA | Public checkpoint folder |
+| Pathology Vision | Virchow | https://huggingface.co/paige-ai/Virchow | DINOv2 | ViT-huge | ~632 | 1.5 | 2000 | NA | Proprietary | Hugging Face model; access may be gated |
+| Pathology Vision | Lunit / DinoSSLPath | https://github.com/lunit-io/benchmark-ssl-pathology/releases/tag/pretrained-weights | DINO | ViT-small | ~21 | 0.036 | 32.5 | NA | TCGA, TULIP | Public pretrained weights |
+| Pathology Vision | UNI | https://huggingface.co/MahmoodLab/UNI | DINOv2 | ViT-large | ~307 | 0.100 | 100 | 20 tissue types | Proprietary, GTEx | Hugging Face model; access may be gated |
+| Pathology Vision | Hibou-B | https://huggingface.co/histai/hibou-b | DINOv2 | ViT-base | ~85 | 1.0 | 1200 | NA | Proprietary | Hugging Face model used in this paper |
+| Pathology Vision | Phikon | https://huggingface.co/owkin/phikon | iBOT | ViT-base | ~85 | 0.006 | 40 | 16 cancer types | TCGA | Public Hugging Face model |
+| Pathology Vision | GPFM | https://huggingface.co/majiabo/GPFM | DINOv2 | ViT-large | ~307 | 0.086 | 190 | 34 tissue types | TCGA, PAIP, 49 public datasets | Also see GitHub: https://github.com/birkhoffkiki/GPFM |
+| Pathology Vision | H-optimus-0 | https://huggingface.co/bioptimus/H-optimus-0 | DINOv2 | ViT-giant | ~1100 | 0.5 | NA | NA | Proprietary | Hugging Face model |
+| Pathology Vision | UNI2 | https://huggingface.co/MahmoodLab/UNI2-h | DINOv2 | ViT-huge | ~632 | 0.350 | 200 | NA | Proprietary | Hugging Face model; access may be gated |
+| Pathology Vision | Phikon-v2 | https://huggingface.co/owkin/phikon-v2 | DINOv2 | ViT-large | ~307 | 0.058 | 460 | 30 cancer sites | TCGA, GTEx, CPTAC, TCIA | Public Hugging Face model |
+| Pathology Vision | Virchow2 | https://huggingface.co/paige-ai/Virchow2 | DINOv2 | ViT-huge | ~632 | 3.1 | NA | 17 tissue types | Proprietary | Hugging Face model; access may be gated |
+| Pathology Vision | Prov-GigaPath | https://huggingface.co/prov-gigapath/prov-gigapath | DINOv2 | ViT-giant | ~1100 | 0.171 | 1300 | 31 tissue types | Proprietary | Also see GitHub: https://github.com/prov-gigapath/prov-gigapath |
+| Pathology Vision | H-optimus-mini / H0-mini | https://huggingface.co/bioptimus/H0-mini | DINOv2 distilled | ViT-base | ~85 | 0.006 | 43 | 16 tissue types | TCGA | Lightweight distilled H-optimus model |
+| Pathology Vision | EXAONEPath | https://huggingface.co/LGAI-EXAONE/EXAONEPath | DINOv1 | ViT-base | ~85 | 0.030 | 285 | - | Public datasets | Public Hugging Face model |
+| Pathology Vision-Language | PLIP | https://github.com/PathologyFoundation/plip | CLIP | ViT-base | ~85 | NA | 0.208 image-text pairs | Pathology | Pathology image-text pairs from Twitter, PathLAION | Public GitHub |
+| Pathology Vision-Language | QuiltNet-B16 | https://huggingface.co/wisdomik/QuiltNet-B-16 | CLIP | ViT-base | ~85 | NA | 1.0 image-text pairs | Pathology | Quilt-1M / histopathology videos | Public Hugging Face model |
+| Pathology Vision-Language | BiomedCLIP | https://huggingface.co/microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224 | CLIP | ViT-base | ~85 | NA | 14-15 image-text pairs | Biomedical | Biomedical image-text pairs | Public Hugging Face model |
+| Pathology Vision-Language | MI-Zero PubMedBERT | https://github.com/mahmoodlab/MI-Zero | Contrastive learning | ViT-small | ~21 | NA | 0.033 image-text pairs | Pathology | Histopathology image-caption pairs | Public GitHub |
+| Pathology Vision-Language | MI-Zero ClinicalBERT | https://github.com/mahmoodlab/MI-Zero | Contrastive learning | ViT-small | ~21 | NA | 0.033 image-text pairs | Pathology | Histopathology image-caption pairs | Public GitHub |
+| Pathology Vision-Language | CONCH | https://github.com/mahmoodlab/CONCH | CoCa | ViT-base | ~85 | NA | 1.17 image-text pairs | Pathology | Histopathology caption pairs | Public GitHub; access may be gated |
+| Pathology Vision-Language | TITAN | https://huggingface.co/MahmoodLab/TITAN | iBOT + CoCa | ViT-base | ~85 | 0.336 | 0.423 image-text pairs | Pathology | WSIs and image captions | Hugging Face model |
+| General Vision | DINO-S16 | https://github.com/facebookresearch/dino | DINO | ViT-small / 16 | ~21 | NA | 14 ImageNet images | General images | ImageNet | Public GitHub |
+| General Vision | DINO-B16 | https://github.com/facebookresearch/dino | DINO | ViT-base / 16 | ~85 | NA | 14 ImageNet images | General images | ImageNet | Public GitHub |
+| General Vision | DINOv2-L | https://github.com/facebookresearch/dinov2 | DINOv2 | ViT-large | ~300 | NA | 142 LVD images | General images | LVD-142M | Public GitHub |
+| General Vision | iBOT-B16 | https://github.com/bytedance/ibot#pre-trained-models | iBOT | ViT-base / 16 | ~85 | NA | ImageNet-22K | General images | ImageNet-22K | Public GitHub |
+| General Vision | iBOT-L16 | https://github.com/bytedance/ibot#pre-trained-models | iBOT | ViT-large / 16 | ~307 | NA | ImageNet-22K | General images | ImageNet-22K | Public GitHub |
+| General Vision-Language | CLIP-B16 | https://huggingface.co/openai/clip-vit-base-patch16 | CLIP / contrastive learning | ViT-base / 16 | ~115 | NA | 400 image-text pairs | General images + text | Web image-text pairs | Also see GitHub: https://github.com/openai/CLIP |
+| General Vision-Language | BLIP-B16-14M | https://github.com/salesforce/BLIP | BLIP | ViT-base | ~85 | NA | 14 ImageNet images | General images + text | ImageNet | Public GitHub |
+| General Vision-Language | ALIGN-base | https://huggingface.co/kakaobrain/align-base/tree/main | Contrastive learning | EfficientNet + BERT | ~746 | NA | 700 image-text pairs | General images + text | Web image-text pairs | Hugging Face checkpoint |
+| General Vision-Language | BEiT-3-L16 | https://github.com/microsoft/unilm/tree/master/beit3 | Multimodal pretraining | ViT-large / BEiT-3 | ~307 | NA | ImageNet-21K + text | General images + text | ImageNet-21K, text corpus | Public GitHub |
 |
+
+
 
 ## 💻 Computational Requirements
 
