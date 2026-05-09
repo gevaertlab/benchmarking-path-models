@@ -1,0 +1,11 @@
+# Third-party notices
+
+This repository includes code adapted from facebookresearch/dino:
+
+https://github.com/facebookresearch/dino
+
+DINO is licensed under the Apache License, Version 2.0.
+
+Copyright (c) Facebook, Inc. and its affiliates.
+
+The original copyright and license notices are retained in the relevant adapted source files.
