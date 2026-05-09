@@ -195,4 +195,4 @@ Evaluating Vision and Pathology Foundation Models for Computational Pathology: A
 medRxiv, 2025. https://doi.org/10.1101/2025.05.08.25327250
 
 ## 📄 License
-This project is licensed under the [MIT License](https://opensource.org/license/MIT).
+This project is licensed under the [MIT License]([https://opensource.org/license/MIT](https://github.com/gevaertlab/benchmarking-path-models/blob/main/License).
